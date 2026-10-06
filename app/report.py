@@ -1,19 +1,29 @@
-import csv, json
-from collections import Counter
+import csv
+import json
+
 
 def generar_reporte():
-    with open('telemetry.csv') as f:
-        filas = list(csv.DictReader(f))
-    
-    contador = Counter(r['classification'] for r in filas)
-    total = len(filas)
-    
+    total = normales = anomalias = 0
+    with open("telemetry.csv", encoding="utf-8", newline="") as f:
+        for fila in csv.DictReader(f):
+            total += 1
+            if fila["classification"] == "NORMAL":
+                normales += 1
+            elif fila["classification"] == "ANOMALY":
+                anomalias += 1
+
     reporte = {
-        'total_registros': total,
-        'normales': contador.get('NORMAL', 0),
-        'anomalias': contador.get('ANOMALY', 0),
-        'tasa_anomalias': f"{contador.get('ANOMALY',0)/total*100:.2f}%" if total else "0%"
+        "total_registros": total,
+        "normales": normales,
+        "anomalias": anomalias,
+        "tasa_anomalias": (
+            f"{anomalias / total * 100:.2f}%" if total else "0%"
+        ),
     }
-    
-    with open('report.json', 'w') as f:
+
+    with open("report.json", "w", encoding="utf-8") as f:
         json.dump(reporte, f, indent=2)
+
+
+if __name__ == "__main__":
+    generar_reporte()

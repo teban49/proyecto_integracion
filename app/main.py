@@ -1,28 +1,24 @@
-import time, logging
+import logging
+import time
+
 import serial
 
-if __package__ in (None, ""):
-    from acquisition import crear_conexion, leer_y_validar
-    from classifier import clasificar
-    from persistence import persistir
-    from system_monitor import estado_sistema
-else:
-    from .acquisition import crear_conexion, leer_y_validar
-    from .classifier import clasificar
-    from .persistence import persistir
-    from .system_monitor import estado_sistema
+from .acquisition import crear_conexion, leer_y_validar
+from .classifier import clasificar
+from .persistence import persistir
+from .system_monitor import estado_sistema
 
 
 def ejecutar():
-    while True:  # RF09: no se detiene ante fallos
+    while True:
         ser = crear_conexion()
         if ser is None:
-            logging.error("Reintentando en 5s...")
             time.sleep(5)
             continue
 
+        mensajes = 0
         try:
-            for i in range(30):  # ~60 segundos de operación
+            while True:
                 data = leer_y_validar(ser)
                 if data is None:
                     continue
@@ -30,18 +26,18 @@ def ejecutar():
                 clasificacion = clasificar(data)
                 persistir(data, clasificacion)
                 logging.info(f"{data['device_id']} → {clasificacion}")
+                mensajes += 1
 
-                # Consultar SO cada 10 mensajes
-                if i % 10 == 0:
+                if mensajes % 10 == 0:
                     estado = estado_sistema()
                     logging.info(f"CPU: {estado['cpu_percent']}% | "
                                  f"RAM: {estado['memoria_percent']}%")
-        except serial.SerialException:
-            logging.error("Conexión perdida, reconectando...")
+        except serial.SerialException as error:
+            logging.error(f"Conexión perdida: {error}")
         finally:
             ser.close()
-            time.sleep(5)
 
+        time.sleep(5)
 
 if __name__ == "__main__":
     ejecutar()
