@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "author": "Copilot",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "id": "esp32",
+      "type": "board-esp32-devkit-c-v4",
+      "left": 80,
+      "top": 80,
+      "attrs": {
+        "flashSize": "16MB"
+      }
+    },
+    {
+      "id": "dht1",
+      "type": "wokwi-dht22",
+      "left": 360,
+      "top": 50,
+      "attrs": {
+        "temperature": "25",
+        "humidity": "55"
+      }
+    },
+    {
+      "id": "btn1",
+      "type": "wokwi-pushbutton",
+      "left": 360,
+      "top": 220,
+      "attrs": {
+        "color": "green"
+      }
+    }
+  ],
+  "connections": [
+    ["dht1:VCC", "esp32:3V3", "red", []],
+    ["dht1:GND", "esp32:GND.1", "black", []],
+    ["dht1:DATA", "esp32:4", "green", []],
+    ["btn1:1", "esp32:0", "blue", []],
+    ["btn1:2", "esp32:GND.2", "black", []]
+  ]
+}
