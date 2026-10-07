@@ -11,11 +11,13 @@ while True:
         sensor.measure()
         temperatura = round(sensor.temperature(), 1)
         humedad = round(sensor.humidity(), 1)
+        status = "ANOMALY" if temperatura > 40 or humedad > 90 else "NORMAL"
         print(json.dumps({
             "device_id": device_id,
             "timestamp": time.time(),
             "temperature": temperatura,
-            "humidity": humedad
+            "humidity": humedad,
+            "status": status
         }))
     except OSError as e:
         print(json.dumps({"device_id": device_id, "error": str(e)}))
