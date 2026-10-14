@@ -37,11 +37,12 @@ def ejecutar():
                     continue
 
                 clasificacion = clasificar(data)
-                persistir(data, clasificacion)
-                print(
-                    json.dumps({**data, "status": clasificacion}, ensure_ascii=False),
-                    flush=True,
+                registro = {**data, "status": clasificacion}
+                texto_telemetria = "TELEMETRIA: " + json.dumps(
+                    registro, ensure_ascii=False
                 )
+                persistir(data, clasificacion, texto_telemetria)
+                print(texto_telemetria, flush=True)
                 logging.info(f"{data['device_id']} → {clasificacion}")
                 ultimo_aviso = time.monotonic()
                 mensajes += 1

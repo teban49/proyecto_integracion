@@ -13,6 +13,7 @@ while True:
         humedad = round(sensor.humidity(), 1)
         status = "ANOMALY" if temperatura > 40 or humedad > 90 else "NORMAL"
         print(json.dumps({
+            "marker": "TELEMETRIA",
             "device_id": device_id,
             "timestamp": time.time(),
             "temperature": temperatura,
